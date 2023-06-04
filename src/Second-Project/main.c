@@ -9,9 +9,14 @@
 #include "keyboard.h"
 #include "button.h"
 
+#define update(target, renderer) SDL_SetRenderDrawColor(renderer, 0xEF, 0xEF, 0xEF, 0x64);\
+	SDL_RenderClear(renderer);\
+	SDL_SetRenderDrawColor(renderer, 0xDF, 0xDF, 0xDF, 0xFF);\
+	SDL_RenderFillRect(renderer, &target);\
+	SDL_RenderPresent(renderer);
+
 int main(void)
 {
-	SDL_Delay(20);
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		printf("Failed to start application! @ main.c\n%s\n", SDL_GetError());
 		return 120;
@@ -44,21 +49,15 @@ int main(void)
 	if (renderer == NULL)
 		puts("WARNING: Failed to init: renderer! @ main.c");
 
-	SDL_SetRenderDrawColor(renderer, 0xEF, 0xEF, 0xEF, 0x64);
-	SDL_RenderClear(renderer);
 	SDL_Rect topnav = {
 		.x = 0,
 		.y = 0,
 		.w = wData.Width,
-		.h = 80
+		.h = 25
 	};
-	SDL_SetRenderDrawColor(renderer, 0xDF, 0xDF, 0xDF, 0xFF);
-	SDL_RenderFillRect(renderer, &topnav);
-	SDL_RenderPresent(renderer);
 
 	SDL_Event event;
-	while (1) {
-		SDL_RenderPresent(renderer);
+	do {
 		while (SDL_PollEvent(&event)) {
 			switch(event.type) {
 			case SDL_QUIT:
@@ -69,9 +68,10 @@ int main(void)
 				handleKeyboardInput(&event.key.keysym, window, &wData);
 				break;
 			default:
+				update(topnav, renderer);
 				break;
 			}
 		}
 		SDL_Delay(20);
-	}
+	} while(1);
 }
